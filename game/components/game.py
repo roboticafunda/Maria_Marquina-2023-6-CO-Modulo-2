@@ -2,13 +2,14 @@ import pygame
 
 # game.utils.constants -> es un modulo donde tengo "objetos" en memoria como el BG (background)...etc
 #   tambien tenemos valores constantes como el title, etc
-from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from game.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, ENEMY_1
 from game.components.spaceship import Spaceship
+from game.components.enemy import Enemy
 
 # Game es la definicion de la clase (plantilla o molde para sacar objetos)
 # self es una referencia que indica que el metodo o el atributo es de cada "objeto" de la clase Game
 class Game:
-    def __init__(self):
+    def __init__(self, num_enemies=20):
         pygame.init() # este es el enlace con la libreria pygame para poder mostrar la pantalla del juego
         pygame.display.set_caption(TITLE)
         pygame.display.set_icon(ICON)
@@ -18,7 +19,9 @@ class Game:
         self.game_speed = 10
         self.x_pos_bg = 0
         self.y_pos_bg = 0
-        self.spaceship = Spaceship()
+        self.spaceship = Spaceship("player")
+        self.enemies = []  # List to store enemy instances
+        self.num_enemies = num_enemies
 
     # este es el "game loop"
     # # Game loop: events - update - draw
@@ -49,6 +52,14 @@ class Game:
         events = pygame.key.get_pressed()
         self.spaceship.update(events)
 
+        for enemy in self.enemies:
+            enemy.update()
+
+        if len(self.enemies) < self.num_enemies:  # Control the number of enemies
+            enemy_name = f"Enemy {len(self.enemies) + 1}"
+            new_enemy = Enemy(enemy_name, ENEMY_1)
+            self.enemies.append(new_enemy)
+
     # este metodo "dibuja o renderiza o refresca mis cambios en la pantalla del juego"
     # aca escribo ALGO de la logica "necesaria" -> repartimos responsabilidades entre clases
     # o sea aqui deberia llamar a los metodos "draw" de mis otros objetos
@@ -58,6 +69,8 @@ class Game:
         self.screen.fill((255, 255, 255)) # esta tupla (255, 255, 255) representa un codigo de color: blanco
         self.draw_background()
         self.spaceship.draw(self.screen)
+        for enemy in self.enemies:
+            enemy.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 

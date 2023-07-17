@@ -4,7 +4,7 @@ from game.utils.constants import SPACESHIP, SCREEN_WIDTH
 
 # Spaceship es una clase derivada(hija) de la clase Sprite (Herencia)
 class Spaceship(Sprite):
-    def __init__(self):
+    def __init__(self, name):
         self.image_x_factor = 40
         self.image_y_factor = 60
         self.movement_factor = 10
@@ -14,6 +14,7 @@ class Spaceship(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.image_x_init
         self.rect.y = self.image_y_factor
+        self.name = name
 
     def update(self, events):
         if events[pygame.K_RIGHT]:
@@ -37,3 +38,6 @@ class Spaceship(Sprite):
         
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
+        font = pygame.font.Font(None, 20)  # Choose a font and size for the label
+        label = font.render(self.name, True, (255, 255, 255))  # Create a label surface
+        screen.blit(label, (self.rect.x, self.rect.y - 20))  # Draw the label above the spaceship
