@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 from game.utils.constants import SPACESHIP, SCREEN_WIDTH
+from game.components.bullet import Bullet
 
 # Spaceship es una clase derivada(hija) de la clase Sprite (Herencia)
 class Spaceship(Sprite):
@@ -15,12 +16,16 @@ class Spaceship(Sprite):
         self.rect.x = self.image_x_init
         self.rect.y = self.image_y_factor
         self.name = name
+        self.bullets = pygame.sprite.Group()  # Group to store bullet instances
 
     def update(self, events):
         if events[pygame.K_RIGHT]:
             self.move_right()
         elif events[pygame.K_LEFT]:
             self.move_left()
+        elif events[pygame.K_SPACE]:
+            self.fire_bullet()  # Fire a bullet when spacebar is pressed
+        self.bullets.update()  # Update bullet positions
 
     def move_right(self):
         if self.rect.x < SCREEN_WIDTH:
@@ -41,3 +46,10 @@ class Spaceship(Sprite):
         font = pygame.font.Font(None, 20)  # Choose a font and size for the label
         label = font.render(self.name, True, (255, 255, 255))  # Create a label surface
         screen.blit(label, (self.rect.x, self.rect.y - 20))  # Draw the label above the spaceship
+        self.bullets.draw(screen)  # Draw the bullets on the screen
+
+    def fire_bullet(self):
+        bullet = Bullet()  # Create a new bullet instance
+        bullet.rect.centerx = self.rect.centerx  # Set the bullet's x-coordinate to match the spaceship's x-coordinate
+        bullet.rect.bottom = self.rect.top  # Set the bullet's y-coordinate to just above the spaceship
+        self.bullets.add(bullet)  # Add the bullet to the group
